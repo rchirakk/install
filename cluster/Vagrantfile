@@ -47,7 +47,10 @@ def create_cfg_info(num_nodes, node_ips)
 end
 
 provision_node = <<SCRIPT
+mkdir -p /home/vagrant/gopath && chown -R vagrant:vagrant /home/vagrant/gopath
 echo "export https_proxy='$2'" >> /etc/profile.d/envvar.sh
+echo "export GOPATH=/home/vagrant/gopath" >> /etc/profile.d/envvar.sh
+echo "export PATH=$PATH:/home/vagrant/gopath/bin" >> /etc/profile.d/envvar.sh
 echo "export http_proxy='$1'" >> ~/.profile
 echo "export https_proxy='$2'" >> ~/.profile
 source /etc/profile.d/envvar.sh
@@ -102,7 +105,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       elsif node_os == UBUNTU
         c.vm.box = 'ubuntu/xenial64'
       else
-        c.vm.box = 'centos/7'
+        #c.vm.box = 'centos/7'
+        c.vm.box = 'contiv/centos73'
         config.ssh.insert_key = false
       end
       c.vm.provision 'shell' do |s|
@@ -119,6 +123,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       # configure ip address etc
+      c.vm.synced_folder ".", "/home/vagrant/gopath/"
       c.vm.hostname = vm_name
       c.vm.network :private_network, ip: node_addr
       c.vm.network :private_network, ip: node_addr, virtualbox__intnet: 'true', auto_config: false

@@ -257,7 +257,8 @@ if [ "$fwd_mode" = "routing" ]; then
 fi
 
 $kubectl get deployment/kube-dns -n kube-system -o json >kube-dns.yaml
-$kubectl delete deployment/kube-dns -n kube-system
+echo "kube-dns running ................"
+#$kubectl delete deployment/kube-dns -n kube-system
 
 echo "Installation is complete"
 echo "========================================================="
@@ -273,3 +274,6 @@ echo " netctl net create -t default --subnet=<CIDR> default-net"
 echo " For example, netctl net create -t default --subnet=20.1.1.0/24 default-net"
 echo " "
 echo "========================================================="
+netctl global set -b routing
+netctl net create -s 20.20.20.0/24 -g 20.20.20.1 default-net
+netctl net create -n infra -s 10.10.10.0/24 -g 10.10.10.1 contivh1
